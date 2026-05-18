@@ -1,95 +1,47 @@
-Третє практичне завдання: Проаналізуйте код і те що він буде виводити на екран. Чому так відбувається?
-Failed!
+# Java Selenium Web Testing — Лабораторні роботи
 
+> Автоматизоване тестування веб-застосунків на Java з використанням Selenium WebDriver.
 
-Причина: кожен new User("Max", 12) — це різний об’єкт у пам’яті, а HashSet вважає їх різними, бо в класі User не перевизначено equals() і hashCode().
-Отже, set.size() = 4, а не 1.
- Щоб було Passed! — потрібно перевизначити equals() і hashCode() у User, щоб об’єкти з
+[![Java](https://img.shields.io/badge/Java-17+-ED8B00?style=flat&logo=openjdk&logoColor=white)](https://openjdk.org)
+[![Selenium](https://img.shields.io/badge/Selenium-4.x-43B02A?style=flat&logo=selenium&logoColor=white)](https://selenium.dev)
 
- 
- import java.util.Set;                       // Імпорт інтерфейсу Set
-public class Main {                         // Оголошення основного класу
-    public static void main(String[] args) { // Точка входу в програму
-        Set<User> set = new HashSet<>();     // Створюємо HashSet для об'єктів User
-        set.add(new User("Max", 12));        // Додаємо перший об'єкт
-        set.add(new User("Max", 12));        // Додаємо другий (такий самий) об'єкт
-        set.add(new User("Max", 12));        // Додаємо третій об'єкт
-        set.add(new User("Max", 12));        // Додаємо четвертий об'єкт
+## Зміст
 
-        if (set.size() == 1) {               // Перевіряємо розмір множини
-            System.out.println("Passed!");   // Якщо 1 — друкуємо Passed!
-        } else {
-            System.out.println("Failed!");   // Інакше — Failed!
-        }
-    }
+Серія практичних завдань з автоматизованого тестування:
 
-    static class User {                      // Внутрішній клас User
-        String name;                         // Поле ім'я
-        int age;                             // Поле вік
+| Репо | Тема |
+|------|------|
+| `java-selenium-basics` | Базові Selenium тести, локатори елементів |
+| `java-selenium-pageobject` | PageObject паттерн, тест-сюіти |
+| `java-collections-testing` | Java Collections — аналіз HashSet/equals/hashCode |
 
-        public User(String name, int age) {   // Конструктор
-            this.name = name;
-            this.age = age;
-        }
-    }
-}
+## Лаб 1.3 — HashSet та equals()/hashCode()
 
-висновок : клас User не має equals() і hashCode().
-HashSet бачить 4 різні об’єкти → size = 4 — Failed!
+Демонструє критичну помилку при роботі з колекціями Java:
 
+```java
+// Без перевизначення equals/hashCode — HashSet вважає об'єкти різними
+Set<User> set = new HashSet<>();
+set.add(new User("John", 25));
+set.add(new User("John", 25)); // дублікат — але set.size() == 2!
 
+// Після правильного перевизначення:
+// set.size() == 1 → "Passed!"
+```
 
-Як виправити : 
+**Урок:** Завжди перевизначай `equals()` та `hashCode()` для об'єктів у колекціях.
 
+## Технологічний стек
 
+- Java 17+
+- Selenium WebDriver 4.x
+- JUnit 5
+- Maven / Gradle
 
+## Запуск
 
-
-
-import java.util.HashSet;                         // Імпорт класу HashSet
-import java.util.Objects;                         // Імпорт класу Objects для equals/hashCode
-import java.util.Set;                            // Імпорт інтерфейсу Set
-
-public class Main {                               // Основний клас
-    public static void main(String[] args) {      // Точка входу
-        Set<User> set = new HashSet<>();         // Створюємо HashSet для User
-        set.add(new User("Max", 12));             // Додаємо перший об'єкт
-        set.add(new User("Max", 12));            // Додаємо другий (з такими ж даними)
-        set.add(new User("Max", 12));            // Додаємо третій
-        set.add(new User("Max", 12));            // Додаємо четвертий
-
-        if (set.size() == 1) {                    // Якщо в множині лише 1 унікальний елемент
-            System.out.println("Passed!");       // Виводимо Passed!
-        } else {
-            System.out.println("Failed!");       // Інакше Failed!
-        }
-    }
-
-    static class User {                            // Внутрішній клас User
-        String name;                               // Ім'я користувача
-        int age;                                  // Вік користувача
-
-        public User(String name, int age) {        // Конструктор
-            this.name = name;
-            this.age = age;
-        }
-
-        @Override
-        public boolean equals(Object o) {         // Перевизначення equals
-            if (this == o) return true;           // Якщо це той самий об'єкт — true
-            if (o == null || getClass() != o.getClass()) return false;
-            User user = (User) o;
-            return age == user.age &&           // Порівнюємо поля age
-                    Objects.equals(name, user.name); // user name
-        }
-
-        @Override
-        public int hashCode() {                 // Перевизначення hashCode
-            return Objects.hash(name, age);     // Формуємо хеш на основі полів
-        }
-    }
-}
-
-Код спочатку виводив Failed!, бо HashSet вважав усі 4 об’єкти різними — не було перевизначених equals() і hashCode().
-Після їх додавання однакові об’єкти розпізнаються як один, set.size() = 1 → Passed!.
-
+```bash
+mvn test
+# або
+gradle test
+```
