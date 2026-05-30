@@ -1,47 +1,99 @@
-# Java Selenium Web Testing — Лабораторні роботи
+<div align="center">
 
-> Автоматизоване тестування веб-застосунків на Java з використанням Selenium WebDriver.
+# Java Collections Testing
 
-[![Java](https://img.shields.io/badge/Java-17+-ED8B00?style=flat&logo=openjdk&logoColor=white)](https://openjdk.org)
-[![Selenium](https://img.shields.io/badge/Selenium-4.x-43B02A?style=flat&logo=selenium&logoColor=white)](https://selenium.dev)
+**HashSet та контракт equals/hashCode — практична демонстрація**
 
-## Зміст
+[![Java](https://img.shields.io/badge/Java_17+-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://github.com/yyvolovyk-1983-edu/java-collections-testing)
+[![JUnit](https://img.shields.io/badge/JUnit_5-25A162?style=for-the-badge&logo=junit5&logoColor=white)](https://github.com/yyvolovyk-1983-edu/java-collections-testing)
 
-Серія практичних завдань з автоматизованого тестування:
+</div>
 
-| Репо | Тема |
-|------|------|
-| `java-selenium-basics` | Базові Selenium тести, локатори елементів |
-| `java-selenium-pageobject` | PageObject паттерн, тест-сюіти |
-| `java-collections-testing` | Java Collections — аналіз HashSet/equals/hashCode |
+---
 
-## Лаб 1.3 — HashSet та equals()/hashCode()
+## Ключова ідея
 
-Демонструє критичну помилку при роботі з колекціями Java:
+`HashSet` визначає унікальність елементів через `equals()` та `hashCode()`.
+Без їх перевизначення — однакові об'єкти вважаються різними.
+
+---
+
+## Реалізація
 
 ```java
-// Без перевизначення equals/hashCode — HashSet вважає об'єкти різними
-Set<User> set = new HashSet<>();
-set.add(new User("John", 25));
-set.add(new User("John", 25)); // дублікат — але set.size() == 2!
+static class User {
+    String name;
+    int age;
 
-// Після правильного перевизначення:
-// set.size() == 1 → "Passed!"
+    User(String name, int age) {
+        this.name = name;
+        this.age  = age;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User u)) return false;
+        return age == u.age && name.equals(u.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, age);
+    }
+}
 ```
 
-**Урок:** Завжди перевизначай `equals()` та `hashCode()` для об'єктів у колекціях.
+## Тест
 
-## Технологічний стек
+```java
+HashSet<User> set = new HashSet<>();
+set.add(new User("Max", 12));
+set.add(new User("Max", 12));
+set.add(new User("Max", 12));
+set.add(new User("Max", 12));
 
-- Java 17+
-- Selenium WebDriver 4.x
-- JUnit 5
-- Maven / Gradle
+if (set.size() == 1) System.out.println("Passed!");
+else                 System.out.println("Failed!");
+```
+
+---
+
+## Порівняння поведінки
+
+| Ситуація | hashCode | equals | Розмір HashSet |
+|---|---|---|---|
+| Без перевизначення | різний (адреса) | == (адреса) | 4 — всі "різні" |
+| З перевизначенням | однаковий | за полями | 1 — дублікати прибрані |
+
+---
+
+## Правило
+
+> Якщо перевизначаєш `equals()` — **завжди** перевизначай `hashCode()`.
+
+---
+
+## Roadmap
+
+- [x] HashSet — equals/hashCode контракт
+- [ ] HashMap — ключі та колізії
+- [ ] LinkedHashSet — порядок вставки
+- [ ] TreeSet — сортування через Comparable/Comparator
+
+---
 
 ## Запуск
 
 ```bash
 mvn test
-# або
-gradle test
 ```
+
+---
+
+<div align="center">
+
+**Автор:** [Євген Воловик](https://github.com/yyvolovyk-1983-edu) · Харків, Україна
+📧 y.y.volovyk@student.khai.edu · [LinkedIn](https://www.linkedin.com/in/yevhen-volovyk/)
+
+</div>
